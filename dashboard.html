@@ -6,57 +6,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:Poppins;
-  background:#f1f5f9;
-}
-.container{
-  display:grid;
-  grid-template-columns:250px 1fr;
-  height:100vh;
-}
-.sidebar{
-  background:#2563eb;
-  color:white;
-  padding:20px;
-}
-.sidebar a{
-  display:block;
-  padding:10px;
-  margin:10px 0;
-  border-radius:8px;
-  cursor:pointer;
-}
-.sidebar a:hover{
-  background:white;
-  color:#2563eb;
-}
-.content{
-  padding:20px;
-}
-.card{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:15px;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-}
+body{margin:0;font-family:Poppins;background:#f1f5f9;}
+.container{display:grid;grid-template-columns:250px 1fr;height:100vh;}
+.sidebar{background:#2563eb;color:white;padding:20px;}
+.sidebar a{display:block;padding:10px;margin:10px 0;cursor:pointer;}
+.content{padding:20px;}
+.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+button{padding:8px;background:red;color:white;border:none;cursor:pointer;}
 </style>
 </head>
 
 <body>
-
-<script>
-// CEK LOGIN
-if(!localStorage.getItem("user")){
-  window.location.href = "index.html";
-}
-</script>
 
 <div class="container">
 
@@ -70,13 +31,12 @@ if(!localStorage.getItem("user")){
 
 <div class="content">
 
-<!-- DASHBOARD -->
 <div id="dashboard">
   <div class="grid">
-    <div class="card"><h3>Target</h3><h1>1000</h1></div>
-    <div class="card"><h3>Realisasi</h3><h1 id="real">0</h1></div>
-    <div class="card"><h3>Efisiensi</h3><h1 id="ef">0%</h1></div>
-    <div class="card"><h3>Status</h3><h1 id="status">Idle</h1></div>
+    <div class="card">Target: 1000</div>
+    <div class="card">Realisasi: <span id="real">0</span></div>
+    <div class="card">Efisiensi: <span id="ef">0%</span></div>
+    <div class="card">Status: <span id="status">Idle</span></div>
   </div>
 
   <div class="card">
@@ -84,27 +44,26 @@ if(!localStorage.getItem("user")){
   </div>
 </div>
 
-<!-- INPUT -->
 <div id="input" style="display:none">
   <div class="card">
     <input id="kebun" placeholder="Kebun"><br><br>
     <input id="jumlah" type="number" placeholder="Jumlah"><br><br>
 
     <select id="shift">
-      <option value="pagi">Pagi</option>
-      <option value="siang">Siang</option>
-      <option value="malam">Malam</option>
+      <option value="pagi">pagi</option>
+      <option value="siang">siang</option>
+      <option value="malam">malam</option>
     </select><br><br>
 
     <input type="date" id="tanggal"><br><br>
+
     <button onclick="simpan()">Simpan</button>
   </div>
 </div>
 
-<!-- MONITORING -->
 <div id="monitoring" style="display:none">
   <div class="card">
-    <table border="1" width="100%">
+    <table width="100%">
       <thead>
         <tr>
           <th>Kebun</th>
@@ -124,88 +83,151 @@ if(!localStorage.getItem("user")){
 
 <script>
 
-let data = JSON.parse(localStorage.getItem("produksi")) || [];
-let chart;
-
-function show(x){
-  ['dashboard','input','monitoring'].forEach(id=>{
-    document.getElementById(id).style.display='none';
-  });
-  document.getElementById(x).style.display='block';
+// 🔐 LOGIN CHECK
+if(!localStorage.getItem("user")){
+  window.location.href = "index.html";
 }
 
+// 🔗 API
+const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
+
+let data = [];
+let chart;
+
+// 🔁 NAVIGASI
+function show(id){
+  ['dashboard','input','monitoring'].forEach(x=>{
+    document.getElementById(x).style.display='none';
+  });
+  document.getElementById(id).style.display='block';
+}
+
+// 🔓 LOGOUT
 function logout(){
   localStorage.removeItem("user");
   window.location.href = "index.html";
 }
 
-function simpan(){
-  const d = {
-    id: Date.now(),
-    kebun: kebun.value,
-    jumlah: parseInt(jumlah.value),
-    shift: shift.value,
-    tanggal: tanggal.value
-  };
+// 📥 LOAD DATA
+async function loadData(){
+  try{
+    const res = await fetch(API);
+    const result = await res.json();
 
-  data.push(d);
-  localStorage.setItem("produksi", JSON.stringify(data));
-  render();
+    console.log("DATA API:", result);
+
+    data = result.map(d => ({
+      id: d.id,
+      kebun: d.kebun || '-',
+      jumlah: parseInt(d.jumlah) || 0,
+      shift: d.shift || '-',
+      tanggal: d.tanggal || ''
+    }));
+
+    render();
+
+  } catch(err){
+    console.error("ERROR LOAD DATA:", err);
+  }
 }
 
-function hapus(id){
-  data = data.filter(d => d.id !== id);
-  localStorage.setItem("produksi", JSON.stringify(data));
-  render();
+// 💾 SIMPAN
+async function simpan(){
+
+  await fetch(API,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      data:[{
+        id: Date.now(),
+        kebun: document.getElementById('kebun').value,
+        jumlah: document.getElementById('jumlah').value,
+        shift: document.getElementById('shift').value,
+        tanggal: document.getElementById('tanggal').value
+      }]
+    })
+  });
+
+  loadData();
 }
 
+// ❌ HAPUS
+async function hapus(id){
+  await fetch(`${API}/id/${id}`,{
+    method:'DELETE'
+  });
+
+  loadData();
+}
+
+// 🎨 RENDER
 function render(){
+
+  console.log("DATA RENDER:", data);
 
   let total = data.reduce((a,b)=>a+b.jumlah,0);
   let target = 1000;
 
-  real.innerText = total;
+  document.getElementById('real').innerText = total;
 
-  let ef = target ? (total/target*100).toFixed(1) : 0;
-  document.getElementById("ef").innerText = ef + "%";
-  document.getElementById("status").innerText = total > 0 ? "Running" : "Idle";
+  let ef = target > 0 ? ((total/target)*100).toFixed(1) : 0;
+  document.getElementById('ef').innerText = ef + '%';
 
-  // tabel
-  let html = '';
-  data.forEach(d=>{
-    html += `
-    <tr>
-      <td>${d.kebun}</td>
-      <td>${d.jumlah}</td>
-      <td>${d.shift}</td>
-      <td>${d.tanggal}</td>
-      <td><button onclick="hapus(${d.id})">Hapus</button></td>
-    </tr>`;
-  });
-  tabel.innerHTML = html;
+  document.getElementById('status').innerText =
+    total > 0 ? 'Running' : 'Idle';
 
-  // grafik
+  // ✅ TABEL
+  let html='';
+
+  if(data.length === 0){
+    html = "<tr><td colspan='5'>Data kosong</td></tr>";
+  } else {
+    data.forEach(d=>{
+      html+=`
+      <tr>
+        <td>${d.kebun}</td>
+        <td>${d.jumlah}</td>
+        <td>${d.shift}</td>
+        <td>${d.tanggal}</td>
+        <td><button onclick="hapus(${d.id})">Hapus</button></td>
+      </tr>`;
+    });
+  }
+
+  document.getElementById('tabel').innerHTML = html;
+
+  // ✅ GRAFIK
   let group = {};
+
   data.forEach(d=>{
-    if(!group[d.tanggal]) group[d.tanggal]=0;
-    group[d.tanggal]+=d.jumlah;
+    if(d.tanggal){
+      if(!group[d.tanggal]) group[d.tanggal]=0;
+      group[d.tanggal]+=d.jumlah;
+    }
   });
+
+  let labels = Object.keys(group);
+  let values = Object.values(group);
 
   if(chart) chart.destroy();
 
-  chart = new Chart(document.getElementById('chart'),{
-    type:'line',
-    data:{
-      labels:Object.keys(group),
-      datasets:[{
-        label:'Produksi',
-        data:Object.values(group)
-      }]
-    }
-  });
+  if(labels.length > 0){
+    chart = new Chart(document.getElementById('chart'),{
+      type:'line',
+      data:{
+        labels:labels,
+        datasets:[{
+          label:'Produksi',
+          data:values,
+          borderWidth:2
+        }]
+      }
+    });
+  }
 }
 
-render();
+// 🚀 START
+loadData();
 
 </script>
 
