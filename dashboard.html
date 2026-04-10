@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Produksi</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:#f1f5f9;
+}
+.container{
+  display:grid;
+  grid-template-columns:250px 1fr;
+  height:100vh;
+}
+.sidebar{
+  background:#2563eb;
+  color:white;
+  padding:20px;
+}
+.sidebar a{
+  display:block;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  cursor:pointer;
+}
+.sidebar a:hover{
+  background:white;
+  color:#2563eb;
+}
+.content{
+  padding:20px;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+// CEK LOGIN
+if(!localStorage.getItem("user")){
+  window.location.href = "index.html";
+}
+</script>
+
+<div class="container">
+
+<div class="sidebar">
+  <h2>AgroTrack</h2>
+  <a onclick="show('dashboard')">Dashboard</a>
+  <a onclick="show('input')">Input</a>
+  <a onclick="show('monitoring')">Monitoring</a>
+  <a onclick="logout()">Logout</a>
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="grid">
+    <div class="card"><h3>Target</h3><h1>1000</h1></div>
+    <div class="card"><h3>Realisasi</h3><h1 id="real">0</h1></div>
+    <div class="card"><h3>Efisiensi</h3><h1 id="ef">0%</h1></div>
+    <div class="card"><h3>Status</h3><h1 id="status">Idle</h1></div>
+  </div>
+
+  <div class="card">
+    <canvas id="chart"></canvas>
+  </div>
+</div>
+
+<!-- INPUT -->
+<div id="input" style="display:none">
+  <div class="card">
+    <input id="kebun" placeholder="Kebun"><br><br>
+    <input id="jumlah" type="number" placeholder="Jumlah"><br><br>
+
+    <select id="shift">
+      <option value="pagi">Pagi</option>
+      <option value="siang">Siang</option>
+      <option value="malam">Malam</option>
+    </select><br><br>
+
+    <input type="date" id="tanggal"><br><br>
+    <button onclick="simpan()">Simpan</button>
+  </div>
+</div>
+
+<!-- MONITORING -->
+<div id="monitoring" style="display:none">
+  <div class="card">
+    <table border="1" width="100%">
+      <thead>
+        <tr>
+          <th>Kebun</th>
+          <th>Jumlah</th>
+          <th>Shift</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tabel"></tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let data = JSON.parse(localStorage.getItem("produksi")) || [];
+let chart;
+
+function show(x){
+  ['dashboard','input','monitoring'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  document.getElementById(x).style.display='block';
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
+}
+
+function simpan(){
+  const d = {
+    id: Date.now(),
+    kebun: kebun.value,
+    jumlah: parseInt(jumlah.value),
+    shift: shift.value,
+    tanggal: tanggal.value
+  };
+
+  data.push(d);
+  localStorage.setItem("produksi", JSON.stringify(data));
+  render();
+}
+
+function hapus(id){
+  data = data.filter(d => d.id !== id);
+  localStorage.setItem("produksi", JSON.stringify(data));
+  render();
+}
+
+function render(){
+
+  let total = data.reduce((a,b)=>a+b.jumlah,0);
+  let target = 1000;
+
+  real.innerText = total;
+
+  let ef = target ? (total/target*100).toFixed(1) : 0;
+  document.getElementById("ef").innerText = ef + "%";
+  document.getElementById("status").innerText = total > 0 ? "Running" : "Idle";
+
+  // tabel
+  let html = '';
+  data.forEach(d=>{
+    html += `
+    <tr>
+      <td>${d.kebun}</td>
+      <td>${d.jumlah}</td>
+      <td>${d.shift}</td>
+      <td>${d.tanggal}</td>
+      <td><button onclick="hapus(${d.id})">Hapus</button></td>
+    </tr>`;
+  });
+  tabel.innerHTML = html;
+
+  // grafik
+  let group = {};
+  data.forEach(d=>{
+    if(!group[d.tanggal]) group[d.tanggal]=0;
+    group[d.tanggal]+=d.jumlah;
+  });
+
+  if(chart) chart.destroy();
+
+  chart = new Chart(document.getElementById('chart'),{
+    type:'line',
+    data:{
+      labels:Object.keys(group),
+      datasets:[{
+        label:'Produksi',
+        data:Object.values(group)
+      }]
+    }
+  });
+}
+
+render();
+
+</script>
+
+</body>
+</html>
