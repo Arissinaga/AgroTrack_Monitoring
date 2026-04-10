@@ -134,25 +134,61 @@ async function loadData(){
 // 💾 SIMPAN
 async function simpan(){
 
-  await fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      data:[{
-        id: Date.now(),
-        kebun: document.getElementById('kebun').value,
-        jumlah: document.getElementById('jumlah').value,
-        shift: document.getElementById('shift').value,
-        tanggal: document.getElementById('tanggal').value
-      }]
-    })
-  });
+  const payload = {
+    kebun: document.getElementById('kebun').value,
+    jumlah: document.getElementById('jumlah').value,
+    shift: document.getElementById('shift').value,
+    tanggal: document.getElementById('tanggal').value
+  };
+
+  console.log("MODE:", editId ? "UPDATE" : "INSERT");
+
+  if(editId){
+
+    // ✅ UPDATE
+    await fetch(`${API}/id/${editId}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        data: payload
+      })
+    });
+
+    alert("Data berhasil diupdate");
+
+    editId = null;
+
+  } else {
+
+    // ✅ INSERT
+    await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        data:[{
+          id: Date.now(),
+          ...payload
+        }]
+      })
+    });
+
+    alert("Data berhasil ditambahkan");
+  }
+
+  // reset form
+  document.getElementById('kebun').value = '';
+  document.getElementById('jumlah').value = '';
+  document.getElementById('tanggal').value = '';
 
   loadData();
+  alert("Data berhasil disimpan");
 }
 
 // ❌ HAPUS
 async function hapus(id){
+
+  if(!confirm("Yakin ingin menghapus data?")) return;
+
   await fetch(`${API}/id/${id}`,{
     method:'DELETE'
   });
@@ -176,21 +212,48 @@ function render(){
   document.getElementById('status').innerText =
     total > 0 ? 'Running' : 'Idle';
 
-  // ✅ TABEL
+  //Function Edit (Isi form Otomatis)
+  function editData(id){
+
+  console.log("EDIT ID:", id);
+
+  const d = data.find(x => String(x.id) === String(id));
+
+  if(!d){
+    alert("Data tidak ditemukan!");
+    return;
+  }
+
+  document.getElementById('kebun').value = d.kebun;
+  document.getElementById('jumlah').value = d.jumlah;
+  document.getElementById('shift').value = d.shift;
+  document.getElementById('tanggal').value = d.tanggal;
+
+  editId = d.id;
+
+  console.log("SET editId:", editId);
+
+  show('input');
+}
+    // ✅ TABEL
   let html='';
+  let editid = null;
 
   if(data.length === 0){
     html = "<tr><td colspan='5'>Data kosong</td></tr>";
   } else {
     data.forEach(d=>{
       html+=`
-      <tr>
-        <td>${d.kebun}</td>
-        <td>${d.jumlah}</td>
-        <td>${d.shift}</td>
-        <td>${d.tanggal}</td>
-        <td><button onclick="hapus(${d.id})">Hapus</button></td>
-      </tr>`;
+<tr>
+  <td>${d.kebun}</td>
+  <td>${d.jumlah}</td>
+  <td>${d.shift}</td>
+  <td>${d.tanggal}</td>
+  <td>
+    <button onclick="editData('${d.id}')">Edit</button>
+    <button onclick="hapus(${d.id})">Hapus</button>
+  </td>
+</tr>`;
     });
   }
 
