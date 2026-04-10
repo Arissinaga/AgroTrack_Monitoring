@@ -88,11 +88,13 @@ if(!localStorage.getItem("user")){
   window.location.href = "index.html";
 }
 
-// 🔗 API
+// 🔗 API Google Sheets (SheetDB)
 const API = "https://sheetdb.io/api/v1/339u8mqen9gpi";
 
+// ✅ GLOBAL VARIABLE
 let data = [];
 let chart;
+let editId = null;
 
 // 🔁 NAVIGASI
 function show(id){
@@ -131,7 +133,29 @@ async function loadData(){
   }
 }
 
-// 💾 SIMPAN
+// ✏️ EDIT DATA (GLOBAL - FIX ERROR)
+function editData(id){
+
+  console.log("EDIT CLICK:", id);
+
+  const d = data.find(x => String(x.id) === String(id));
+
+  if(!d){
+    alert("Data tidak ditemukan!");
+    return;
+  }
+
+  document.getElementById('kebun').value = d.kebun;
+  document.getElementById('jumlah').value = d.jumlah;
+  document.getElementById('shift').value = d.shift;
+  document.getElementById('tanggal').value = d.tanggal;
+
+  editId = d.id;
+
+  show('input');
+}
+
+// 💾 SIMPAN (INSERT + UPDATE)
 async function simpan(){
 
   const payload = {
@@ -155,7 +179,6 @@ async function simpan(){
     });
 
     alert("Data berhasil diupdate");
-
     editId = null;
 
   } else {
@@ -181,7 +204,6 @@ async function simpan(){
   document.getElementById('tanggal').value = '';
 
   loadData();
-  alert("Data berhasil disimpan");
 }
 
 // ❌ HAPUS
@@ -212,48 +234,24 @@ function render(){
   document.getElementById('status').innerText =
     total > 0 ? 'Running' : 'Idle';
 
-  //Function Edit (Isi form Otomatis)
-  function editData(id){
-
-  console.log("EDIT ID:", id);
-
-  const d = data.find(x => String(x.id) === String(id));
-
-  if(!d){
-    alert("Data tidak ditemukan!");
-    return;
-  }
-
-  document.getElementById('kebun').value = d.kebun;
-  document.getElementById('jumlah').value = d.jumlah;
-  document.getElementById('shift').value = d.shift;
-  document.getElementById('tanggal').value = d.tanggal;
-
-  editId = d.id;
-
-  console.log("SET editId:", editId);
-
-  show('input');
-}
-    // ✅ TABEL
+  // ✅ TABEL
   let html='';
-  let editid = null;
 
   if(data.length === 0){
     html = "<tr><td colspan='5'>Data kosong</td></tr>";
   } else {
     data.forEach(d=>{
       html+=`
-<tr>
-  <td>${d.kebun}</td>
-  <td>${d.jumlah}</td>
-  <td>${d.shift}</td>
-  <td>${d.tanggal}</td>
-  <td>
-    <button onclick="editData('${d.id}')">Edit</button>
-    <button onclick="hapus(${d.id})">Hapus</button>
-  </td>
-</tr>`;
+      <tr>
+        <td>${d.kebun}</td>
+        <td>${d.jumlah}</td>
+        <td>${d.shift}</td>
+        <td>${d.tanggal}</td>
+        <td>
+          <button onclick="editData('${d.id}')">Edit</button>
+          <button onclick="hapus('${d.id}')">Hapus</button>
+        </td>
+      </tr>`;
     });
   }
 
