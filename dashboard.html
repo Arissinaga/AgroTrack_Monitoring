@@ -3,17 +3,252 @@
 <head>
 <meta charset="UTF-8">
 <title>Dashboard Produksi</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{margin:0;font-family:Poppins;background:#f1f5f9;}
-.container{display:grid;grid-template-columns:250px 1fr;height:100vh;}
-.sidebar{background:#2563eb;color:white;padding:20px;}
-.sidebar a{display:block;padding:10px;margin:10px 0;cursor:pointer;}
-.content{padding:20px;}
-.card{background:white;padding:20px;border-radius:10px;margin-bottom:15px;}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-button{padding:8px;background:red;color:white;border:none;cursor:pointer;}
+
+/* 🌐 GLOBAL */
+body{
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:#f1f5f9;
+}
+
+/* 📦 LAYOUT */
+.container{
+  display:grid;
+  grid-template-columns:250px 1fr;
+  height:100vh;
+}
+
+/* 📊 SIDEBAR */
+.sidebar{
+  background: linear-gradient(180deg, #1e3a8a, #2563eb);
+  color:white;
+  padding:25px 15px;
+}
+
+.sidebar h2{
+  text-align:center;
+  margin-bottom:30px;
+  font-size:22px;
+  letter-spacing:1px;
+}
+
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.sidebar a:hover{
+  background: rgba(255,255,255,0.2);
+  transform:translateX(5px);
+}
+.sidebar{
+  border-right:1px solid rgba(255,255,255,0.1);
+}
+.active{
+  background:white;
+  color:#1e3a8a;
+  font-weight:bold;
+}
+/* 📄 CONTENT */
+.content{
+  padding:25px;
+  overflow-y:auto;
+}
+
+/* 🧾 CARD */
+.card{
+  background:white;
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.06);
+  transition:0.3s;
+}
+.card h3{
+  margin-bottom:15px;
+  font-weight:600;
+  color:#1e293b;
+}
+.card:hover{
+  transform:translateY(-4px);
+}
+
+/* 📊 KPI */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+.grid-kecil{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.card.kecil{
+  padding:15px;
+  font-size:14px;
+}
+
+.card.kecil h4{
+  margin:0;
+  color:#64748b;
+}
+
+.card.kecil p{
+  margin:5px 0;
+  font-size:18px;
+  color:#2563eb;
+}
+.grid .card{
+  text-align:center;
+}
+
+.grid .card span{
+  display:block;
+  font-size:30px;
+  font-weight:bold;
+  margin-top:10px;
+}
+/* Kelas Status */
+.hijau{
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+  padding:4px 10px;
+  border-radius:20px;
+  display:inline-block;
+  font-size:12px;
+}
+
+.merah{
+  background:#ef4444;
+  color:white;
+  font-weight:bold;
+  padding:4px 10px;
+  border-radius:20px;
+  display:inline-block;
+  font-size:12px;
+}
+.hijau:hover,
+.merah:hover{
+  opacity:0.85;
+}
+.hijau, .merah{
+  transition:0.3s;
+}
+/* warna KPI */
+#real{color:#22c55e;}
+#ef{color:#3b82f6;}
+#status{color:#f59e0b;}
+
+/* 📝 INPUT */
+input, select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:12px;
+  font-size:14px;
+  transition:0.2s;
+}
+
+input:focus, select:focus{
+  border-color:#2563eb;
+  outline:none;
+}
+
+/* 🔘 BUTTON */
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:500;
+  transition:0.3s;
+}
+
+/* primary */
+button{
+  background:#2563eb;
+  color:white;
+}
+
+button:hover{
+  background:#1e40af;
+}
+
+/* delete */
+button:last-child{
+  background:#ef4444;
+}
+
+button:last-child:hover{
+  background:#dc2626;
+}
+
+/* 📋 TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th{
+  background:#0f172a;
+  color:white;
+  padding:12px;
+  font-size:14px;
+}
+table th,
+table td{
+  text-align:center;
+  vertical-align:middle;
+}
+td button{
+  margin:2px;
+}
+td{
+  padding:12px;
+  border-bottom:1px solid #eee;
+}
+
+tr:hover{
+  background:#f8fafc;
+}
+
+/* 📈 CHART */
+#chart{
+  max-height:320px;
+}
+
+/* 📱 RESPONSIVE */
+@media(max-width:900px){
+  .grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .container{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    display:none;
+  }
+}
+
 </style>
 </head>
 
@@ -33,11 +268,37 @@ button{padding:8px;background:red;color:white;border:none;cursor:pointer;}
 
 <div id="dashboard">
   <div class="grid">
-    <div class="card">Target: 1000</div>
+    <div class="card">Target: <span id="target">0</span> kg</div>
     <div class="card">Realisasi: <span id="real">0</span></div>
     <div class="card">Efisiensi: <span id="ef">0%</span></div>
     <div class="card">Status: <span id="status">Idle</span></div>
   </div>
+  <div class="grid-kecil">
+
+  <div class="card kecil">
+    <h4>Produksi Hari Ini</h4>
+    <p><b id="todayTotal">0</b> kg</p>
+    <small id="todayPercent">0% dari target</small>
+  </div>
+
+  <div class="card kecil">
+    <h4>Produksi Tertinggi</h4>
+    <p><b id="maxProd">0</b> kg</p>
+    <small id="maxDate">-</small>
+  </div>
+
+  <div class="card kecil">
+    <h4>Produksi Terendah</h4>
+    <p><b id="minProd">0</b> kg</p>
+    <small id="minDate">-</small>
+  </div>
+
+</div>
+<div class="card">
+  <h3>Produksi Hari Ini</h3>
+  <p>Realisasi: <b id="todayReal">0</b> kg</p>
+  <p>Efisiensi: <b id="todayEf">0%</b></p>
+</div>
 
   <div class="card">
     <canvas id="chart"></canvas>
@@ -46,16 +307,21 @@ button{padding:8px;background:red;color:white;border:none;cursor:pointer;}
 
 <div id="input" style="display:none">
   <div class="card">
-    <input id="kebun" placeholder="Kebun"><br><br>
-    <input id="jumlah" type="number" placeholder="Jumlah"><br><br>
+    <h3>Input Produksi</h3>
+
+    <input id="kebun" placeholder="Kebun">
+    <input id="produk" placeholder="Produk">
+    <input id="jumlah" type="number" placeholder="Jumlah Produksi">
 
     <select id="shift">
       <option value="pagi">pagi</option>
       <option value="siang">siang</option>
       <option value="malam">malam</option>
-    </select><br><br>
+    </select>
 
-    <input type="date" id="tanggal"><br><br>
+    <input type="date" id="tanggal">
+
+    <input id="keterangan" placeholder="Keterangan">
 
     <button onclick="simpan()">Simpan</button>
   </div>
@@ -63,25 +329,43 @@ button{padding:8px;background:red;color:white;border:none;cursor:pointer;}
 
 <div id="monitoring" style="display:none">
   <div class="card">
+    <h3>Data Produksi</h3>
     <table width="100%">
       <thead>
-        <tr>
-          <th>Kebun</th>
-          <th>Jumlah</th>
-          <th>Shift</th>
-          <th>Tanggal</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
+<tr>
+  <th>Kebun</th>
+  <th>Produk</th>
+  <th>Jumlah</th>
+  <th>Shift</th>
+  <th>Tanggal</th>
+  <th>Keterangan</th>
+  <th>Aksi</th>
+</tr>
+</thead>
       <tbody id="tabel"></tbody>
     </table>
   </div>
+      <div class="card">
+  <h3>Rekap Produksi Harian</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Total Produksi</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="rekap"></tbody>
+  </table>
 </div>
-
 </div>
 </div>
 
 <script>
+//Notifikasi
+function notif(msg){
+  alert(msg); // nanti bisa upgrade ke toast
+}
 
 // 🔐 LOGIN CHECK
 if(!localStorage.getItem("user")){
@@ -98,10 +382,20 @@ let editId = null;
 
 // 🔁 NAVIGASI
 function show(id){
+
   ['dashboard','input','monitoring'].forEach(x=>{
     document.getElementById(x).style.display='none';
   });
+
   document.getElementById(id).style.display='block';
+
+  // 🔥 reset active
+  document.querySelectorAll('.sidebar a').forEach(a=>{
+    a.classList.remove('active');
+  });
+
+  // 🔥 set active
+  event.target.classList.add('active');
 }
 
 // 🔓 LOGOUT
@@ -119,12 +413,14 @@ async function loadData(){
     console.log("DATA API:", result);
 
     data = result.map(d => ({
-      id: d.id,
-      kebun: d.kebun || '-',
-      jumlah: parseInt(d.jumlah) || 0,
-      shift: d.shift || '-',
-      tanggal: d.tanggal || ''
-    }));
+  id: d.id,
+  kebun: d.kebun || '-',
+  produk: d.produk || '-',
+  jumlah: parseInt(d.jumlah) || 0,
+  shift: d.shift || '-',
+  tanggal: d.tanggal || '',
+  keterangan: d.keterangan || '-'
+}));
 
     render();
 
@@ -146,9 +442,11 @@ function editData(id){
   }
 
   document.getElementById('kebun').value = d.kebun;
+  document.getElementById('produk').value = d.produk;
   document.getElementById('jumlah').value = d.jumlah;
   document.getElementById('shift').value = d.shift;
   document.getElementById('tanggal').value = d.tanggal;
+  document.getElementById('keterangan').value = d.keterangan;
 
   editId = d.id;
 
@@ -160,9 +458,11 @@ async function simpan(){
 
   const payload = {
     kebun: document.getElementById('kebun').value,
+    produk:document.getElementById('produk').value,
     jumlah: document.getElementById('jumlah').value,
     shift: document.getElementById('shift').value,
-    tanggal: document.getElementById('tanggal').value
+    tanggal: document.getElementById('tanggal').value,
+    keterangan: document.getElementById('keterangan').value
   };
 
   console.log("MODE:", editId ? "UPDATE" : "INSERT");
@@ -195,7 +495,7 @@ async function simpan(){
       })
     });
 
-    alert("Data berhasil ditambahkan");
+    notif("Data berhasil ditambahkan");
   }
 
   // reset form
@@ -221,20 +521,103 @@ async function hapus(id){
 // 🎨 RENDER
 function render(){
 
-  console.log("DATA RENDER:", data);
+  const targetHarian = 1000;
 
-  let total = data.reduce((a,b)=>a+b.jumlah,0);
-  let target = 1000;
 
-  document.getElementById('real').innerText = total;
+  // 📅 ambil tanggal hari ini
+  const today = new Date().toISOString().split('T')[0];
 
-  let ef = target > 0 ? ((total/target)*100).toFixed(1) : 0;
-  document.getElementById('ef').innerText = ef + '%';
+  // 📅 ambil 7 hari terakhir
+  let last7Days = [];
+  for(let i=6;i>=0;i--){
+    let d = new Date();
+    d.setDate(d.getDate() - i);
+    last7Days.push(d.toISOString().split('T')[0]);
+  }
+
+  // 🟢 FILTER DATA 7 HARI
+  let data7hari = data.filter(d => last7Days.includes(d.tanggal));
+
+  // =========================
+  // 🔝 KPI MINGGUAN
+  // =========================
+  let totalMingguan = data7hari.reduce((a,b)=>a+b.jumlah,0);
+  let targetMingguan = targetHarian * 7;
+  // tampilkan target mingguan
+const targetEl = document.getElementById('target');
+if(targetEl){
+  targetEl.innerText = targetMingguan;
+}
+
+  document.getElementById('real').innerText = totalMingguan;
+
+  let efMingguan = ((totalMingguan / targetMingguan) * 100).toFixed(1);
+  document.getElementById('ef').innerText = efMingguan + '%';
 
   document.getElementById('status').innerText =
-    total > 0 ? 'Running' : 'Idle';
+    totalMingguan > 0 ? 'Running' : 'Idle';
 
-  // ✅ TABEL
+  // =========================
+  // 🔽 KPI HARI INI (OPSIONAL TAMBAHAN)
+  // =========================
+  let dataHariIni = data.filter(d => d.tanggal === today);
+
+  let totalHariIni = dataHariIni.reduce((a,b)=>a+b.jumlah,0);
+  let efHariIni = ((totalHariIni / targetHarian) * 100).toFixed(1);
+
+  console.log("Hari ini:", totalHariIni, "Ef:", efHariIni);
+  document.getElementById('todayReal').innerText = totalHariIni;
+document.getElementById('todayEf').innerText = efHariIni + '%';
+  // =========================
+// 📊 KPI TAMBAHAN
+// =========================
+
+// total hari ini
+document.getElementById('todayTotal').innerText = totalHariIni;
+
+// persen hari ini
+let persenHariIni = ((totalHariIni / targetHarian) * 100).toFixed(1);
+
+document.getElementById('todayPercent').innerText =
+  persenHariIni + '% dari target';
+
+// produksi tertinggi & terendah (7 hari)
+let produksiPerHari = {};
+
+// grouping per tanggal
+data7hari.forEach(d=>{
+  if(!produksiPerHari[d.tanggal]) produksiPerHari[d.tanggal]=0;
+  produksiPerHari[d.tanggal]+=d.jumlah;
+});
+
+// ubah jadi array object
+let arr = Object.keys(produksiPerHari).map(tgl => ({
+  tanggal: tgl,
+  total: produksiPerHari[tgl]
+}));
+
+if(arr.length > 0){
+
+  let maxObj = arr.reduce((a,b)=> a.total > b.total ? a : b);
+  let minObj = arr.reduce((a,b)=> a.total < b.total ? a : b);
+
+  document.getElementById('maxProd').innerText = maxObj.total;
+  document.getElementById('maxDate').innerText = maxObj.tanggal;
+
+  document.getElementById('minProd').innerText = minObj.total;
+  document.getElementById('minDate').innerText = minObj.tanggal;
+
+} else {
+
+  document.getElementById('maxProd').innerText = 0;
+  document.getElementById('maxDate').innerText = '-';
+
+  document.getElementById('minProd').innerText = 0;
+  document.getElementById('minDate').innerText = '-';
+}
+  // =========================
+  // 📋 TABEL
+  // =========================
   let html='';
 
   if(data.length === 0){
@@ -244,9 +627,11 @@ function render(){
       html+=`
       <tr>
         <td>${d.kebun}</td>
+        <td>${d.produk}</td>
         <td>${d.jumlah}</td>
         <td>${d.shift}</td>
         <td>${d.tanggal}</td>
+        <td>${d.keterangan}</td>
         <td>
           <button onclick="editData('${d.id}')">Edit</button>
           <button onclick="hapus('${d.id}')">Hapus</button>
@@ -255,36 +640,115 @@ function render(){
     });
   }
 
-  document.getElementById('tabel').innerHTML = html;
+  tabel.innerHTML = html;
+//Tabel rekap Harian 
+let rekap = {};
 
-  // ✅ GRAFIK
-  let group = {};
+// grouping per tanggal
+data.forEach(d=>{
+  if(!rekap[d.tanggal]) rekap[d.tanggal] = 0;
+  rekap[d.tanggal] += d.jumlah;
+});
 
-  data.forEach(d=>{
-    if(d.tanggal){
-      if(!group[d.tanggal]) group[d.tanggal]=0;
-      group[d.tanggal]+=d.jumlah;
-    }
-  });
+// target harian
+const target = 1000;
 
-  let labels = Object.keys(group);
-  let values = Object.values(group);
+// tampilkan
+let htmlRekap = '';
 
-  if(chart) chart.destroy();
+Object.keys(rekap).forEach(tgl => {
 
-  if(labels.length > 0){
-    chart = new Chart(document.getElementById('chart'),{
-      type:'line',
-      data:{
-        labels:labels,
-        datasets:[{
-          label:'Produksi',
-          data:values,
-          borderWidth:2
-        }]
-      }
-    });
+  let total = rekap[tgl];
+  let status = total >= target ? 'Tercapai' : 'Tidak Tercapai';
+  let warnaClass = total >= target ? 'hijau' : 'merah';
+  htmlRekap += `
+<tr>
+  <td>${tgl}</td>
+  <td>${total}</td>
+  <td>
+  <span class="${warnaClass}">${status}</span>
+</td>
+</tr>`;
+});
+
+document.getElementById('rekap').innerHTML = htmlRekap;
+  // =========================
+// 📈 GRAFIK 7 HARI (3 BELAKANG + HARI INI + 3 DEPAN)
+// =========================
+
+let range7hari = [];
+
+// ambil range tanggal
+for(let i = -3; i <= 3; i++){
+  let d = new Date();
+  d.setDate(d.getDate() + i);
+  range7hari.push(d.toISOString().split('T')[0]);
+}
+
+// inisialisasi data
+let group = {};
+range7hari.forEach(tgl => {
+  group[tgl] = 0;
+});
+
+// isi data dari database
+data.forEach(d=>{
+  if(group[d.tanggal] !== undefined){
+    group[d.tanggal] += d.jumlah;
   }
+});
+
+// label & value
+let labels = Object.keys(group);
+let values = Object.values(group);
+
+// destroy chart lama
+if(chart) chart.destroy();
+
+// buat chart baru
+chart = new Chart(document.getElementById('chart'),{
+  type:'line',
+  data:{
+    labels:labels,
+    datasets:[{
+  label:'Produksi 7 Hari',
+  data:values,
+  borderWidth:3,
+  borderColor:'#2563eb',
+  backgroundColor:'#2563eb',
+  tension:0.4,
+  fill:false,
+  pointRadius:4,
+
+  // 🔥 TAMBAHKAN DI SINI
+  segment: {
+    borderDash: ctx => {
+      // index 3 = hari ini (karena -3 s/d +3)
+      return ctx.p0DataIndex >= 3 ? [6,6] : [];
+    }
+  }
+
+},
+{
+    label:'Target Harian',
+    data: labels.map(() => targetHarian), // 🔥 garis flat
+    borderWidth:2,
+    borderColor:'#f59e0b',
+    backgroundColor:'#f59e0b',
+    tension:0.4,
+    borderDash:[5,5], // garis putus-putus
+    pointRadius:0,
+    fill:false
+  }
+]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{ display:true }
+    }
+  }
+});
 }
 
 // 🚀 START
