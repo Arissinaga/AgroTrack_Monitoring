@@ -64,6 +64,83 @@ body{
   padding:25px;
   overflow-y:auto;
 }
+/* BRAND SIDEBAR */
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:25px;
+}
+
+.brand-logo{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+/* ABOUT SECTION */
+.about-container{
+  max-width:900px;
+  margin:auto;
+}
+
+.about-header{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.about-header h2{
+  color:#1e293b;
+  font-size:24px;
+}
+
+.about-header p{
+  color:#64748b;
+}
+
+/* SCROLL MEMBER LIST */
+.member-list{
+  max-height:450px;
+  overflow-y:auto;
+  padding-right:10px;
+}
+
+/* CARD MEMBER */
+.member-card{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  background:white;
+  padding:15px;
+  border-radius:14px;
+  margin-bottom:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.05);
+  transition:0.3s;
+}
+
+.member-card:hover{
+  transform:translateX(5px);
+}
+
+.member-card img{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.member-info h4{
+  margin:0;
+  color:#0f172a;
+}
+
+.member-info p{
+  margin:3px 0 0;
+  font-size:13px;
+  color:#64748b;
+}
 
 /* 🧾 CARD */
 .card{
@@ -248,7 +325,169 @@ tr:hover{
     display:none;
   }
 }
+/*ERP About*/
+/* =========================
+   ERP ZIGZAG TEAM FINAL STYLE
+========================= */
 
+.erp-team{
+  position:relative;
+  max-width:900px;
+  margin:20px auto;
+
+  /* ✅ kasih ruang untuk footer */
+  padding:20px 0 140px 0;
+}
+
+/* garis tengah timeline */
+.erp-team::before{
+  content:'';
+  position:absolute;
+  left:50%;
+  top:0;
+
+  width:3px;
+
+  /* ✅ INI KUNCI UTAMA */
+  bottom:160px;
+
+  background:#2563eb;
+  transform:translateX(-50%);
+}
+
+/* CARD UTAMA */
+.erp-card{
+  position:relative;
+  width:50%;
+  padding:18px;
+  box-sizing:border-box;
+
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  background:white;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+
+/* hover effect */
+.erp-card:hover{
+  transform:translateY(-4px);
+}
+
+/* KIRI */
+.erp-card:nth-child(odd){
+  left:0;
+  flex-direction:row;
+  text-align:left;
+}
+
+/* KANAN */
+.erp-card:nth-child(even){
+  left:50%;
+  flex-direction:row-reverse;
+  text-align:right;
+}
+
+/* DOT TIMELINE */
+.erp-card::before{
+  content:'';
+  position:absolute;
+  top:25px;
+  width:14px;
+  height:14px;
+  background:#f59e0b;
+  border-radius:50%;
+  border:3px solid white;
+  box-shadow:0 0 0 2px #2563eb;
+}
+
+.erp-card:nth-child(odd)::before{
+  right:-8px;
+}
+
+.erp-card:nth-child(even)::before{
+  left:-8px;
+}
+
+/* AVATAR */
+.erp-avatar img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #2563eb;
+}
+
+/* TEXT */
+.erp-info{
+  flex:1;
+}
+
+.erp-info h4{
+  margin:0;
+  color:#0f172a;
+  font-size:16px;
+}
+
+.erp-info p{
+  margin:4px 0;
+  font-size:13px;
+  color:#64748b;
+}
+
+/* ROLE LABEL */
+.erp-role{
+  display:inline-block;
+  margin-top:5px;
+  font-size:12px;
+  padding:4px 10px;
+  background:#2563eb;
+  color:white;
+  border-radius:20px;
+}
+/* =========================
+   ABOUT US FOOTER
+========================= */
+
+.about-footer{
+  margin-top:40px;
+  padding:25px;
+  text-align:center;
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  border-radius:16px;
+  color:white;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
+
+/* logo */
+.footer-logo{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:50%;
+  margin-bottom:12px;
+  border:2px solid white;
+}
+
+/* text */
+.footer-text p{
+  margin:4px 0;
+  font-size:14px;
+  opacity:0.95;
+}
+
+/* hover effect ringan */
+.about-footer:hover{
+  transform:translateY(-3px);
+  transition:0.3s;
+}
+.about-footer{
+  position:relative;
+  z-index:2;
+}
 </style>
 </head>
 
@@ -257,10 +496,15 @@ tr:hover{
 <div class="container">
 
 <div class="sidebar">
+  <div class="brand">
+  <img src="img/logo.jpg" class="brand-logo">
   <h2>AgroTrack</h2>
-  <a onclick="show('dashboard')">Dashboard</a>
-  <a onclick="show('input')">Input</a>
-  <a onclick="show('monitoring')">Monitoring</a>
+</div>
+  
+<a onclick="show('dashboard', this)">Dashboard</a>
+<a onclick="show('input', this)" id="menuInput">Input</a>
+<a onclick="show('monitoring', this)" id="menuMonitoring">Monitoring</a>
+<a onclick="show('about', this)">About Us</a>
   <a onclick="logout()">Logout</a>
 </div>
 
@@ -358,6 +602,101 @@ tr:hover{
     <tbody id="rekap"></tbody>
   </table>
 </div>
+
+</div>
+<div id="about" style="display:none">
+
+  <div class="about-header">
+    <h2>About Us</h2>
+    <p>Profil perusahaan dan tim pengembang AgroTrack</p>
+  </div>
+
+  <div class="card">
+    <h3>Profil Perusahaan</h3>
+    <p>
+      AgroTrack adalah sistem monitoring produksi berbasis web yang digunakan
+      untuk memantau hasil produksi harian, efisiensi kerja, serta analisis
+      target produksi secara real-time dan terstruktur.
+    </p>
+  </div>
+
+  <div class="card">
+  <h3>Tim Pengembang</h3>
+
+  <div class="erp-team">
+
+  <div class="erp-card">
+    <div class="erp-avatar">
+      <img src="img/yolanda.jpeg">
+    </div>
+    <div class="erp-info">
+      <h4>Yolanda T. Malau</h4>
+      <p>2314231033</p>
+    </div>
+  </div>
+
+  <div class="erp-card">
+    <div class="erp-avatar">
+      <img src="img/damai.jpeg">
+    </div>
+    <div class="erp-info">
+      <h4>Damai Stevani Erliana</h4>
+      <p>2314231015</p>
+      
+    </div>
+  </div>
+
+  <div class="erp-card">
+    <div class="erp-avatar">
+      <img src="img/rexsy.jpeg">
+    </div>
+    <div class="erp-info">
+      <h4>Rexsy Marombun Silalahi</h4>
+      <p>2314231023</p>
+      
+    </div>
+  </div>
+
+  <div class="erp-card">
+    <div class="erp-avatar">
+      <img src="img/dwi.jpeg">
+    </div>
+    <div class="erp-info">
+      <h4>Dwi Aprilia</h4>
+      <p>2314231007</p>
+      
+    </div>
+  </div>
+
+  <div class="erp-card">
+    <div class="erp-avatar">
+      <img src="img/septia.jpeg">
+    </div>
+    <div class="erp-info">
+      <h4>Septia Sari Naningrum</h4>
+      <p>2314231059</p>
+      
+    </div>
+    
+
+</div>
+<div class="about-footer">
+
+  <img src="img/lg.png" class="footer-logo">
+
+  <div class="footer-text">
+    <p>Program Studi Teknologi Industri Pertanian</p>
+    <p>Jurusan Teknologi Hasil Pertanian</p>
+    <p>Fakultas Pertanian</p>
+    <p>Universitas Lampung</p>
+    <p>2026</p>
+  </div>
+
+</div>
+  </div>
+  </div>
+</div>
+
 </div>
 </div>
 
@@ -368,7 +707,7 @@ function notif(msg){
 }
 
 // 🔐 LOGIN CHECK
-if(!localStorage.getItem("user")){
+if(!sessionStorage.getItem("user")){
   window.location.href = "index.html";
 }
 
@@ -381,29 +720,68 @@ let chart;
 let editId = null;
 
 // 🔁 NAVIGASI
-function show(id){
+function show(id, el = null){
 
-  ['dashboard','input','monitoring'].forEach(x=>{
-    document.getElementById(x).style.display='none';
+  // 🔐 ambil user & role dari session
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  const role = user?.role;
+
+  // 🚫 pembatasan akses untuk operator
+  if(role === "operator"){
+    
+    // operator tidak boleh akses dashboard
+    if(id === "dashboard"){
+      alert("Anda tidak memiliki akses ke Dashboard");
+      return;
+    }
+
+    // operator tidak boleh akses monitoring
+    if(id === "monitoring"){
+      alert("Anda tidak memiliki akses ke Monitoring");
+      return;
+    }
+  }
+
+  // 🔽 sembunyikan semua section
+  ['dashboard','input','monitoring','about'].forEach(x=>{
+    const section = document.getElementById(x);
+    if(section) section.style.display = 'none';
   });
 
-  document.getElementById(id).style.display='block';
+  // 🔼 tampilkan section yang dipilih
+  const activeSection = document.getElementById(id);
+  if(activeSection) activeSection.style.display = 'block';
 
-  // 🔥 reset active
+  // 🎯 aktifkan menu sidebar
   document.querySelectorAll('.sidebar a').forEach(a=>{
     a.classList.remove('active');
   });
 
-  // 🔥 set active
-  event.target.classList.add('active');
+  if(el){
+    el.classList.add('active');
+  }
 }
 
 // 🔓 LOGOUT
 function logout(){
-  localStorage.removeItem("user");
+  sessionStorage.removeItem("user");
   window.location.href = "index.html";
 }
+// 🔐 AMBIL DATA USER LOGIN
+const user = JSON.parse(sessionStorage.getItem("user"));
+const role = user.role;
+// 👮 ATUR HAK AKSES MENU
+if(role === "operator"){
 
+  // sembunyikan menu monitoring
+  document.getElementById("menuMonitoring").style.display = "none";
+
+  // opsional: sembunyikan dashboard jika mau lebih ketat
+  document.getElementById("dashboard").style.display = "none";
+
+  // langsung arahkan ke input
+  show('input');
+}
 // 📥 LOAD DATA
 async function loadData(){
   try{
@@ -522,6 +900,7 @@ async function hapus(id){
 function render(){
 
   const targetHarian = 1000;
+  
 
 
   // 📅 ambil tanggal hari ini
@@ -640,7 +1019,7 @@ if(arr.length > 0){
     });
   }
 
-  tabel.innerHTML = html;
+  document.getElementById('tabel').innerHTML = html;
 //Tabel rekap Harian 
 let rekap = {};
 
