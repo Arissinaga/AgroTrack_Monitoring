@@ -1001,56 +1001,74 @@ if(arr.length === 0){
   // =========================
   // 📋 TABEL
   // =========================
-  let html='';
+  // 📋 TABEL
+let html='';
 
-  if(data.length === 0){
-    html = "<tr><td colspan='5'>Data kosong</td></tr>";
-  } else {
-    data.forEach(d=>{
-      html+=`
-      <tr>
-        <td>${d.kebun}</td>
-        <td>${d.produk}</td>
-        <td>${d.jumlah}</td>
-        <td>${d.shift}</td>
-        <td>${d.tanggal}</td>
-        <td>${d.keterangan}</td>
-        <td>
-          <button onclick="editData('${d.id}')">Edit</button>
-          <button onclick="hapus('${d.id}')">Hapus</button>
-        </td>
-      </tr>`;
-    });
-  }
+if(data.length === 0){
+  html = "<tr><td colspan='7'>Data kosong</td></tr>";
+} else {
 
+  // 🔽 data sudah diurutkan
+  let dataSorted = [...data].sort((a, b) => {
+    return new Date(a.tanggal) - new Date(b.tanggal);
+  });
+
+  dataSorted.forEach(d=>{
+    html+=`
+    <tr>
+      <td>${d.kebun}</td>
+      <td>${d.produk}</td>
+      <td>${d.jumlah}</td>
+      <td>${d.shift}</td>
+      <td>${d.tanggal}</td>
+      <td>${d.keterangan}</td>
+      <td>
+        <button onclick="editData('${d.id}')">Edit</button>
+        <button onclick="hapus('${d.id}')">Hapus</button>
+      </td>
+    </tr>`;
+  });
+}
   document.getElementById('tabel').innerHTML = html;
-//Tabel rekap Harian 
+// =========================
+// 📊 REKAP HARIAN (SORTED FIX)
+// =========================
+
+
+
 let rekap = {};
 
 // grouping per tanggal
-data.forEach(d=>{
-  if(!rekap[d.tanggal]) rekap[d.tanggal] = 0;
-  rekap[d.tanggal] += d.jumlah;
+data.forEach(d => {
+  let jumlah = Number(d.jumlah) || 0; // 🔥 pastikan angka
+  if (!rekap[d.tanggal]) rekap[d.tanggal] = 0;
+  rekap[d.tanggal] += jumlah;
 });
 
-// target harian
-const target = 1000;
+// ubah object ke array
+let rekapArray = Object.entries(rekap).map(([tgl, total]) => ({
+  tanggal: tgl,
+  total: Number(total) // 🔥 pastikan angka
+}));
+
+// urutkan tanggal
+rekapArray.sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal));
 
 // tampilkan
 let htmlRekap = '';
 
-Object.keys(rekap).forEach(tgl => {
+rekapArray.forEach(item => {
 
-  let total = rekap[tgl];
-  let status = total >= target ? 'Tercapai' : 'Tidak Tercapai';
-  let warnaClass = total >= target ? 'hijau' : 'merah';
+  let status = item.total >= targetHarian ? 'Tercapai' : 'Tidak Tercapai';
+  let warnaClass = item.total >= targetHarian ? 'hijau' : 'merah';
+
   htmlRekap += `
 <tr>
-  <td>${tgl}</td>
-  <td>${total}</td>
+  <td>${item.tanggal}</td>
+  <td>${item.total}</td>
   <td>
-  <span class="${warnaClass}">${status}</span>
-</td>
+    <span class="${warnaClass}">${status}</span>
+  </td>
 </tr>`;
 });
 
