@@ -161,7 +161,7 @@ button:hover{
 /* FOOTER */
 .footer{
   position:absolute;
-  bottom:14px;
+  bottom:25px;
   width:100%;
   text-align:center;
   font-size:14px;
@@ -204,19 +204,19 @@ button:hover{
 </div>
 
 <div class="footer">
-  © 2026 AgroTrack System
+  © 2026 AgroTrack System Kelompok 1
 </div>
 
 <script>
 
 // USER (SIMULASI)
 const users = [
-  {username:'admin', password:'123', role:'admin'},
+  {username:'manajer', password:'456', role:'admin'},
   {username:'operator', password:'123', role:'operator'}
 ];
 
 // AUTO LOGIN
-if(localStorage.getItem("user")){
+if(sessionStorage.getItem("user")){
   window.location.href = "dashboard.html";
 }
 
@@ -240,7 +240,7 @@ function login(){
   );
 
   if(user){
-    localStorage.setItem("user", JSON.stringify(user));
+    sessionStorage.setItem("user", JSON.stringify(user));
     window.location.href = "dashboard.html";
   } else {
     alert("Login gagal!");
