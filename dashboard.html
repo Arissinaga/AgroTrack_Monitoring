@@ -788,22 +788,20 @@ async function loadData(){
     const res = await fetch(API);
     const result = await res.json();
 
-    console.log("DATA API:", result);
-
     data = result.map(d => ({
-  id: d.id,
-  kebun: d.kebun || '-',
-  produk: d.produk || '-',
-  jumlah: parseInt(d.jumlah) || 0,
-  shift: d.shift || '-',
-  tanggal: d.tanggal || '',
-  keterangan: d.keterangan || '-'
-}));
+      id: d.id,
+      kebun: d.kebun || '-',
+      produk: d.produk || '-',
+      jumlah: Number(d.jumlah) || 0,
+      shift: d.shift || '-',
+      tanggal: String(d.tanggal).split('T')[0], // 🔥 NORMALISASI TOTAL
+      keterangan: d.keterangan || '-'
+    }));
 
-    render();
+    render(); // ONLY ONE RENDER HERE
 
   } catch(err){
-    console.error("ERROR LOAD DATA:", err);
+    console.error(err);
   }
 }
 
@@ -881,7 +879,8 @@ async function simpan(){
   document.getElementById('jumlah').value = '';
   document.getElementById('tanggal').value = '';
 
-  loadData();
+  await loadData();
+render();
 }
 
 // ❌ HAPUS
@@ -893,7 +892,8 @@ async function hapus(id){
     method:'DELETE'
   });
 
-  loadData();
+  await loadData();
+render();
 }
 
 // 🎨 RENDER
@@ -915,7 +915,9 @@ function render(){
   }
 
   // 🟢 FILTER DATA 7 HARI
-  let data7hari = data.filter(d => last7Days.includes(d.tanggal));
+  let data7hari = data.filter(d => {
+  return last7Days.includes(d.tanggal?.split('T')[0]);
+});
 
   // =========================
   // 🔝 KPI MINGGUAN
@@ -960,39 +962,41 @@ let persenHariIni = ((totalHariIni / targetHarian) * 100).toFixed(1);
 document.getElementById('todayPercent').innerText =
   persenHariIni + '% dari target';
 
-// produksi tertinggi & terendah (7 hari)
-let produksiPerHari = {};
 
-// grouping per tanggal
-data7hari.forEach(d=>{
-  if(!produksiPerHari[d.tanggal]) produksiPerHari[d.tanggal]=0;
-  produksiPerHari[d.tanggal]+=d.jumlah;
+// 📊 PRODUKSI TERENDAH & TERTINGGI (7 HARI)
+// =========================
+
+// pastikan grouping aman
+let produksiPerHari = Object.create(null);
+
+// 🔥 pakai data REAL (bukan data7hari dulu)
+data.forEach(d => {
+
+  let tgl = String(d.tanggal).split('T')[0];
+  let jumlah = Number(d.jumlah) || 0;
+
+  produksiPerHari[tgl] = (produksiPerHari[tgl] || 0) + jumlah;
 });
 
-// ubah jadi array object
-let arr = Object.keys(produksiPerHari).map(tgl => ({
-  tanggal: tgl,
-  total: produksiPerHari[tgl]
-}));
+let arr = Object.entries(produksiPerHari)
+  .map(([tanggal, total]) => ({ tanggal, total }));
 
-if(arr.length > 0){
+// 🔥 IMPORTANT FIX
+if(arr.length === 0){
+  document.getElementById('maxProd').innerText = 0;
+  document.getElementById('minProd').innerText = 0;
+  document.getElementById('maxDate').innerText = '-';
+  document.getElementById('minDate').innerText = '-';
+} else {
 
-  let maxObj = arr.reduce((a,b)=> a.total > b.total ? a : b);
-  let minObj = arr.reduce((a,b)=> a.total < b.total ? a : b);
+  let maxObj = arr.reduce((a,b)=> a.total >= b.total ? a : b);
+  let minObj = arr.reduce((a,b)=> a.total <= b.total ? a : b);
 
   document.getElementById('maxProd').innerText = maxObj.total;
   document.getElementById('maxDate').innerText = maxObj.tanggal;
 
   document.getElementById('minProd').innerText = minObj.total;
   document.getElementById('minDate').innerText = minObj.tanggal;
-
-} else {
-
-  document.getElementById('maxProd').innerText = 0;
-  document.getElementById('maxDate').innerText = '-';
-
-  document.getElementById('minProd').innerText = 0;
-  document.getElementById('minDate').innerText = '-';
 }
   // =========================
   // 📋 TABEL
